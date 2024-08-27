@@ -47,6 +47,9 @@ def move(snake, movementList):
 def inbounds(snake):
     return 0 <= snake[0][0] < NTILES and 0 <= snake[0][1] < NTILES
 
+def selfCollision(snake):
+    return any(part == snake[0] for part in snake[1:])
+
 def checkEat(snake, apple):
     return snake[0][0] == apple[0] and snake[0][1] == apple[1]
 
@@ -75,7 +78,7 @@ while True:
     movementList = propogateMovement(movementList, movement)
     draw(snake, apple)
 
-    if not inbounds(snake):
+    if not inbounds(snake) or selfCollision(snake):
         close()
 
     for event in pygame.event.get():
@@ -85,4 +88,3 @@ while True:
             movement = handleMove(event.key, movement)
 
     clock.tick(frameRate)
-    
