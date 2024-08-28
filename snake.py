@@ -90,12 +90,12 @@ while True:
     if not inbounds(snake) or selfCollision(snake):
         close()
 
-    event = pygame.event.poll()
-    pygame.event.clear()
-
-    if event.type == pygame.QUIT:
-        close()
-    elif event.type == pygame.KEYDOWN:
-        movement = handleMove(event.key, movement)
+    firstEvent = True
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            close()
+        elif event.type == pygame.KEYDOWN and firstEvent:
+            firstEvent = False
+            movement = handleMove(event.key, movement)
 
     clock.tick(frameRate)
