@@ -5,7 +5,8 @@ from sys import exit
 color = {
     "apple" : (125,0,0),
     "black" : (0,0,0),
-    "green" : (0,125,0)
+    "green" : (0,125,0),
+    "white" : (255,255,255)
 }
 
 WIDTH = 800
@@ -16,16 +17,22 @@ frameRate = NTILES // 3
 pygame.init()
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN])
 window = pygame.display.set_mode((WIDTH,WIDTH))
+pygame.display.set_caption("Snake")
 clock = pygame.time.Clock()
+font = pygame.font.Font(None, 24)
 
 def getRandomPosition():
     return [randint(0,NTILES-1), randint(0,NTILES-1)]
 
-def draw(snakePositions, applePosition):
+def draw(snakePositions, applePosition, score):
     window.fill(color["black"])
     pygame.draw.rect(window, color["apple"], (applePosition[0]*tileSize, applePosition[1]*tileSize, tileSize, tileSize))
     for snakePos in snakePositions:
         pygame.draw.rect(window, color["green"], (snakePos[0]*tileSize, snakePos[1]*tileSize, tileSize, tileSize))
+    scoreText = font.render(f"Score: {score}", True, color["white"])
+    scoreRect = scoreText.get_rect()
+    scoreRect.center = (scoreRect[2], scoreRect[3])
+    window.blit(scoreText, scoreRect)
     pygame.display.flip()
 
 def handleMove(key, movement):
@@ -64,19 +71,21 @@ def close():
     exit()
 
 apple = getRandomPosition()
-snake = [[0,0]]
 movement = [1,0]
 movementList = [movement]
+score = 0
+snake = [[0,0]]
 
 while True:
     if checkEat(snake, apple):
         apple = getRandomPosition()
         growSnake(snake, movementList[-1])
         movementList.append(movementList[-1])
+        score += 1
 
     move(snake, movementList)
     movementList = propogateMovement(movementList, movement)
-    draw(snake, apple)
+    draw(snake, apple, score)
 
     if not inbounds(snake) or selfCollision(snake):
         close()
